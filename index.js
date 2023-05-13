@@ -42,15 +42,30 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             // using option to get selected data from api
             const options = {
-                projection: { title: 1, price: 1, service_id: 1 },
+                projection: { title: 1, price: 1, service_id: 1, img: 1 },
             };
             const result = await serviceCollection.findOne(query, options);
             res.send(result);
         })
 
-        // create booking data in database using post method
+        // get some booking data ---- using query to load data for specific email
+        app.get('/bookings', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+
+            const result = await bookingCollection.find().toArray();
+            res.send(result);
+        })
+
+        // create and catch booking data in database using post method
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
+            console.log(booking);
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
         })
 
 
