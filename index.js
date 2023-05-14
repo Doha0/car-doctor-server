@@ -19,7 +19,10 @@ const client = new MongoClient(uri, {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
-    }
+    },
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    maxPoolSize: 10,
 });
 
 const verifyJWT = (req, res, next) => {
@@ -44,7 +47,12 @@ const verifyJWT = (req, res, next) => {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        client.connect((err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+        });
 
         const serviceCollection = client.db('CarDoctor').collection('services');
         const bookingCollection = client.db('CarDoctor').collection('bookings');
